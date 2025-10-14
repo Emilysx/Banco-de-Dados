@@ -50,4 +50,3 @@ SELECT * from livro;
 UPDATE emprestimo SET data_emprestimo = '2020-05-14' WHERE id_livro = 9;
 DELETE FROM emprestimo WHERE id_emprestimo=9;
 SELECT * from emprestimo;
-
