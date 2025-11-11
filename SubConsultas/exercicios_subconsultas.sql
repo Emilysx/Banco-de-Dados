@@ -1,87 +1,56 @@
--- Exercicios de Sub Consultas
-USE lojaMarcia;
-
--- Exercicio 1 WHERE
-SELECT nome_produto, preco 
-FROM produtos
-WHERE id_categoria = (
-	SELECT id_categoria
-    FROM categorias
-    WHERE nome_categoria = "Eletrônicos"
-);
-
--- Exercicio 2 IN e NOT IN
-
-SELECT nome_produto, preco
-FROM produtos
-WHERE id_fornecedor IN (
-	SELECT id_fornecedor
-    FROM fornecedores
-    WHERE pais = "EUA"
-);
-
--- NOT IN 
-SELECT nome_produto, preco
-FROM produtos
-WHERE id_fornecedor NOT IN (
-	SELECT id_fornecedor
-    FROM fornecedores
-    WHERE pais = "EUA"
-);
-
--- Exercicios ANY e ALL
--- ANY 
-SELECT nome_produto, preco
-FROM produtos
-WHERE preco > ANY (
-	SELECT preco 
-    FROM produtos
-    WHERE id_categoria = 2
-);
-
--- ALL
-SELECT nome_produto, preco
-FROM produtos
-WHERE preco > ALL (
-	SELECT preco 
-    FROM produtos
-    WHERE id_categoria = 2
-);
-
--- Exercicio EXISTS e NOT EXISTS
--- EXISTS
-SELECT nome_categoria
-FROM categorias
-WHERE EXISTS(
-	SELECT * 
-    FROM produtos
-    WHERE produtos.id_categoria = categorias.id_categoria
-);
-
--- NOT EXISTS
-SELECT nome_fornecedor
-FROM fornecedores
-WHERE NOT EXISTS(
-	SELECT 1 
-    FROM produtos
-    WHERE produtos.id_fornecedor = fornecedores.id_fornecedor
-);
-
--- Exercicio FROM 
-SELECT Nome_Categoria, Media_Preco_Categoria
-	FROM ( SELECT C.Nome_Categoria,
-    AVG(P.Preco) AS Media_Preco_Categoria
-    FROM Produtos AS P
-    JOIN Categorias AS C ON P.ID_Categoria = C.ID_Categoria
-    GROUP BY C.Nome_Categoria ) 
-	AS Tabela_Medias WHERE Media_Preco_Categoria > 100;
+-- Exercicios de SubConsulta (Lista da Marcia) - 11/11/2025
+USE bcd_subconsulta;
 
 
--- Exercicio 
--- SELECT
-SELECT Nome_Categoria, (
-	SELECT COUNT(*)
-    FROM Produtos
-    WHERE Produtos.ID_Categoria = Categorias.ID_Categoria )
-    AS Quantidade_Produtos FROM Categorias;
- 
+-- Exericio 1
+SELECT pedidos.id_pedido, pedidos.data_pedido, pedidos.status,
+(
+	SELECT SUM(itens_pedido.qtde * itens_pedido.preco_unit)
+    FROM itens_pedido
+    WHERE itens_pedido.id_pedido = pedidos.id_pedido
+) AS Total_Pedido
+FROM pedidos;
+
+-- Exericio 2
+SELECT pedidos.id_pedido, pedidos.data_pedido,
+(
+	SELECT SUM(itens_pedido.qtde * itens_pedido.preco_unit)
+    FROM itens_pedido
+    WHERE itens_pedido.id_pedido = pedidos.id_pedido
+) AS Total_Pedido
+FROM pedidos
+WHERE 
+(
+        SELECT SUM(itens_pedido.qtde * itens_pedido.preco_unit)
+        FROM itens_pedido
+        WHERE itens_pedido.id_pedido = pedidos.id_pedido
+) > (
+        SELECT AVG(total_por_pedido)
+        FROM (
+            SELECT SUM(i2.qtde * i2.preco_unit) AS total_por_pedido
+            FROM itens_pedido i2
+            GROUP BY i2.id_pedido
+        ) AS medias
+    );
+
+
+
+
+-- Exericio 3
+
+-- Exericio 4
+
+-- Exericio 5
+
+-- Exericio 6
+
+-- Exericio 7
+
+-- Exericio 8
+
+-- Exericio 9
+
+-- Exericio 10
+
+-- Exericio 11
+
